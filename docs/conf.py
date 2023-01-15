@@ -6,9 +6,9 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'spikelearn'
-copyright = '2023, Angel Yanguas-Gil'
-author = 'Angel Yanguas-Gil'
+project = 'Spikelearn'
+copyright = '2022, Argonne'
+author = 'Argonne'
 release = '0.1.1'
 
 # -- General configuration ---------------------------------------------------
