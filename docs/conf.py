@@ -6,13 +6,7 @@
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(".."))
-
-import mock
-
-MOCK_MODULES = ['numpy', 'matplotlib']
-for mod_name in MOCK_MODULES:
-   sys.modules[mod_name] = mock.Mock() 
+sys.path.insert(0, os.path.abspath("./.."))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
