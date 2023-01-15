@@ -1,3 +1,21 @@
 [build-system]
 requires = ["setuptools>=42"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "spikelearn"
+authors = [
+{ name="Angel Yanguas-Gil"}]
+version = "0.1.1"
+description = "Spiking neural networks for AI workflows and neuromorphic computing"
+readme = "README.md"
+keywords = ["spiking neurons", "neural networks", "AI",
+    "neuromorphic computing", "spiking neural networks", "neuroscience"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/spikelearn/spikelearn"
