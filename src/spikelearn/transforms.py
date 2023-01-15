@@ -1,5 +1,4 @@
-"""Transforms for synaptic inputs
-"""
+#Copyright Argonne 2022. See LICENSE.md for details.
 
 import numpy as np
 

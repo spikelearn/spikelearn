@@ -1,3 +1,5 @@
+#Copyright Argonne 2022. See LICENSE.md for details.
+
 from collections import namedtuple
 
 #Pin = namedtuple("Pin", ["name", "value", "conn"], defaults=["", None, []])

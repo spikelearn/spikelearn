@@ -1,3 +1,5 @@
+#Copyright Argonne 2022. See LICENSE.md for details.
+
 """
 
 An element has the following interface:

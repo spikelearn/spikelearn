@@ -1,3 +1,14 @@
+#Copyright Argonne 2022. See LICENSE.md for details.
+
+"""
+Neurons in Spikingnet are grouped in layers.
+
+All neurons share the same underlying interface, with Spikingnet
+expecting neurons to be callable and have `reset` and `update` methods
+defined.
+
+"""
+
 from .layer import Layer
 
 import numpy as np

@@ -1,3 +1,5 @@
+#Copyright Argonne 2022. See LICENSE.md for details.
+
 import json
 #from .streamnet import StreamGraph
 

@@ -1,10 +1,4 @@
-"""Spiking neural network
-
-This module implements a general spiking neural network comprising an
-arbitrary collection of layers, inputs, and synapses. 
-
-
-"""
+#Copyright Argonne 2022. See LICENSE.md for details.
 
 from .streamnet import StreamNet, Element
 

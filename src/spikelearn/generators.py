@@ -1,5 +1,6 @@
-import numpy as np
+#Copyright Argonne 2022. See LICENSE.md for details.
 
+import numpy as np
 
 class Generator:
     """Base class for spike generators

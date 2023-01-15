@@ -1,3 +1,4 @@
+#Copyright Argonne 2022. See LICENSE.md for details.
 """
 Implement static and plastic synapses
 
@@ -5,8 +6,8 @@ A synapse object should implement three methods:
 
 - A `__call__` method taking an arbitrary number of inputs and returning
   the synapse output
-- An update(xo) method that passes the output of the neurons
-- A reset() method
+- An `update(xo)` method that passes the output of the neurons
+- A `reset()` method
 
 Update and reset can be dummies, but a SpikingNet expects that
 they will be implemented.
@@ -20,7 +21,7 @@ from .trace import Trace
 
 class BaseSynapse:
     """
-    Base synapse, where synaptic weights are stored in a 2D array.
+    Static synapse, where synaptic weights are stored in a 2D array.
     """
 
     def __init__(self, Ne, No, W0, transform=None, syn_type=None):
@@ -31,7 +32,7 @@ class BaseSynapse:
         Ne : number of presynaptic neurons
         No : number of postsynaptic neurons
         W0 : a 2D array with the initial synaptic weights
-        transforms : input transform
+        transform : input transform
         syn_type : type of synapse, one of exc, inh, hybrid, None
         """
 
@@ -54,7 +55,6 @@ class BaseSynapse:
             self.out =  self.W @ self.transform(xe)
         return self.out
 
-
     def reset(self):
         if self.has_transform:
             self.transform.reset()
@@ -75,6 +75,16 @@ StaticSynapse = BaseSynapse
 
 
 class OneToOneSynapse(BaseSynapse):
+    """
+    One to one static synapse
+
+    Implement one to one static synapse chaining each input to its corresponding
+    output.
+
+    """
+
+    def __init__(self, Ne, W0, transform=None, syn_type=None):
+        super().__init__(Ne, Ne, W0, transform, syn_type)
 
     def __call__(self, xe):
         if self.syn_type == "inh":
@@ -99,7 +109,8 @@ class PlasticSynapse(BaseSynapse):
         tre : presynaptic trace tuple
         tro : postsynaptic trace tuple
         transform : transform function applied to inputs, defaults None
-        rule_params: parameters defining synaptic plasticity rule
+        rule_params: dictionary with parameters defining synaptic
+            plasticity rule. Requires `Ap` and `An` keys.
         Wlim : clamping parameter for synaptic weights
         syn_type : type of synapse ("exc", "inh", None)
         tracelim : clamping parameter for synaptic traces
