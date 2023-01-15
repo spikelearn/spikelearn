@@ -13,8 +13,8 @@ Spikelearn documentation
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-   
-   apidocs/snn
+
+   apidocs/snn.rst
 
 
 About Spikelearn
