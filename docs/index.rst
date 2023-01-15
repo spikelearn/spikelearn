@@ -4,11 +4,17 @@
    contain the root `toctree` directive.
 
 Spikelearn documentation
-======================================
+========================
+
+.. automodule:: spikelearn
+   :members:
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+   
+   apidocs/snn
 
 
 About Spikelearn
