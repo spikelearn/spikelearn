@@ -48,6 +48,12 @@ for i in range(10):
     print(s)
 ```
 
+## Acknowledgements
+
+* Threadwork, U.S. Department of Energy Office of Science, 
+  Microelectronics Program.
+
+
 ## Copyright and license
 
 Copyright © 2022, UChicago Argonne, LLC
