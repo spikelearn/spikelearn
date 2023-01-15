@@ -11,6 +11,12 @@ Spikelearn documentation
    :caption: Contents:
 
 
+About Spikelearn
+----------------
+
+Spikelearn is a package that implements spiking neural networks for ML workflows
+and neuromorphic computing applications.
+
 
 Indices and tables
 ==================
