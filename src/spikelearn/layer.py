@@ -18,3 +18,7 @@ class Layer:
     def out(self):
         raise NotImplementedError()
 
+    @property
+    def group_synapses(self):
+        raise NotImplementedError()
+

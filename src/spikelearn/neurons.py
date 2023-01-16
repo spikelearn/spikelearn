@@ -60,9 +60,13 @@ class SpikingLayer(Layer):
         self._a = np.exp(-1./tau)
         self._b = 1-self._a
         self._v0 = v0*np.ones(N)
-        self._v = np.zeros(N)
-        self._s = np.zeros(N)
         self._refr = refr
+        self.reset()
+        self._group_synapses = False
+
+    @property
+    def group_synapses(self):
+        return self._group_synapses
 
     @property
     def N(self):
@@ -167,3 +171,45 @@ class SpikingRecLayer(SpikingLayer):
         xn = x + (self.Wrec @ self.s,)
         return super().__call__(*xn)
 
+
+
+class BioSpikingLayer(Layer):
+
+    def __init__(self, N, nudt, v0=0.5):
+        self.N = N
+        self.nu0 = nudt
+        self.v0 = v0
+        self.reset()
+        self._group_synapses = True
+
+    @property
+    def group_synapses(self):
+        return self._group_synapses
+
+    def reset(self):
+        self.v = np.zeros(self.N)
+        self.vold = np.zeros(self.N)
+        self.s = np.zeros(self.N)
+
+
+    def __call__(self, xe, xi, perf=False):
+        self.nu = (1+xe+xi)
+        a = np.exp(-self.nu0*self.nu)
+        self.de = xe/self.nu
+        self.v = self.vold * a + self.de*(1-a)
+        self.s = H(self.v-self.v0)
+        if perf:
+            self.xe = xe
+            self.calc_perf()
+        self.vold = (1-self.s)*self.v
+        return self.s
+
+    @property
+    def out(self):
+        return self.s
+
+    def calc_perf(self):
+        dv = self.v - self.vold
+        av = 0.5*(self.v + self.vold)
+        self.power = self.xe*((1-self.de)**2 + dv/self.nu0*(2-self.de-av))
+ 

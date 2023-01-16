@@ -45,8 +45,12 @@ class BaseSynapse:
         if self.has_transform:
             self.transform = transform
         else:
-            self.transform = lambda x:  x
-        self.syn_type = syn_type
+            self.transform = lambda x: x
+        
+        if syn_type is None:
+            self.syn_type = 'hybrid'
+        else:
+            self.syn_type = syn_type
 
     def __call__(self, xe):
         if self.syn_type == "inh":
