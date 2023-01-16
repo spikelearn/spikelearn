@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>SNN &#8212; Spikelearn 0.1.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <link rel="canonical" href="https://spikelearn.github.io/spikelearn/apidocs/snn.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="Spikelearn documentation" href="../index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Spikelearn documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Spikelearn 0.1.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SNN</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="snn">
+<h1>SNN<a class="headerlink" href="#snn" title="Permalink to this heading">¶</a></h1>
+<section id="module-spikelearn.snn">
+<span id="spiking-neural-networks"></span><h2>Spiking neural networks<a class="headerlink" href="#module-spikelearn.snn" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.snn.SpikingNet">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.snn.</span></span><span class="sig-name descname"><span class="pre">SpikingNet</span></span><a class="headerlink" href="#spikelearn.snn.SpikingNet" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class implementing arbitrary neural networks</p>
+<p>Imstances start with empty networks, which can be subsequently
+populated with layers, inputs, and synapses</p>
+<ul class="simple">
+<li><p>Layers are objects taking a one or more inputs and returning an
+output. They should implement the  methods <cite>__call__</cite> and <cite>reset</cite>
+and an attribute <cite>out</cite> that preserves the results from the last
+computation.</p></li>
+<li><p>Inputs define external inputs whose values are passed to the
+network through the <cite>__call__</cite> method.</p></li>
+<li><p>Synapses connect one or more presynaptic layers with a postsynaptic
+layer. They should implement the methods <cite>__call__</cite>, <cite>reset</cite>, and
+<cite>update</cite>. The <cite>update</cite> method should be able to take two arguments,
+one representing the activity of the postsynaptic neuron and
+an optional flag that triggers learning if it is an active synapse.</p></li>
+</ul>
+<p>A network can be constructed using a series of method that help define
+inputs, outputs, layers, and the synapses connecting them. The
+construction of the network is meant to be a one-off process. Deleting
+layers or synapses would most likely break the network or result
+in unpredictable behavior.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="spikelearn.snn.SpikingNet.add_layer">
+<span class="sig-name descname"><span class="pre">add_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">snl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.snn.SpikingNet.add_layer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a layer to the snn</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>snl</strong> – a layer of neurons</p></li>
+<li><p><strong>name</strong> – the name of the layer</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spikelearn.snn.SpikingNet.add_synapse">
+<span class="sig-name descname"><span class="pre">add_synapse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pre_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.snn.SpikingNet.add_synapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a synapse between two or more network nodes</p>
+<p>A synapse has only one postsynaptic connection but can
+have more than one presynaptic connection to include the
+case of ternary synapses involving one or more modulatory
+inputs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos_name</strong> – name of the postsynaptic layer</p></li>
+<li><p><strong>syn</strong> – a synapse object</p></li>
+<li><p><strong>pre_names</strong> – names of one or more presynaptic layers</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – pre or postsynaptic connection not identified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spikelearn.snn.SpikingNet.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.snn.SpikingNet.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets all elements of the network</p>
+<p>Broadcasts a reset signal to all nodes and synapses
+in the network</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-spikelearn.neurons">
+<span id="neurons"></span><h2>Neurons<a class="headerlink" href="#module-spikelearn.neurons" title="Permalink to this heading">¶</a></h2>
+<p>Neurons in Spikingnet are grouped in layers.</p>
+<p>All neurons share the same underlying interface, with Spikingnet
+expecting neurons to be callable and have <cite>reset</cite> and <cite>update</cite> methods
+defined.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingLayer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.neurons.</span></span><span class="sig-name descname"><span class="pre">SpikingLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.neurons.SpikingLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements a leaky integrate and fire</p>
+<p>Implements a layer of LIF neurons. Its interface conforms
+to that of a <cite>Layer</cite> object.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingLayer.out">
+<span class="sig-name descname"><span class="pre">out</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingLayer.out" title="Permalink to this definition">¶</a></dt>
+<dd><p>array containing last activations</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingLayer.N">
+<span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingLayer.N" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of neurons in the layer</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingLayer.v">
+<span class="sig-name descname"><span class="pre">v</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingLayer.v" title="Permalink to this definition">¶</a></dt>
+<dd><p>array with membrane potential</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingLayer.s">
+<span class="sig-name descname"><span class="pre">s</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingLayer.s" title="Permalink to this definition">¶</a></dt>
+<dd><p>array with neuron activations</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingLayer.tau">
+<span class="sig-name descname"><span class="pre">tau</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingLayer.tau" title="Permalink to this definition">¶</a></dt>
+<dd><p>decay time, in timestep units</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingLayer.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.neurons.SpikingLayer.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the neuron internal state</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingLayer.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.neurons.SpikingLayer.step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Advances the neuron a single timestep</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingRecLayer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.neurons.</span></span><span class="sig-name descname"><span class="pre">SpikingRecLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">N</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wrec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v0</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.neurons.SpikingRecLayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements spiking neurons with an internal recurrent interaction.</p>
+<p>Implements a layer of leaky integrate and fire (LIF) neurons with
+an additional static, recurrent interaction within the layer. This
+layer can be used to implement cross-inhibition between neurons
+within the layer. Its interface conforms to that of a <cite>Layer</cite> object.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingRecLayer.out">
+<span class="sig-name descname"><span class="pre">out</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingRecLayer.out" title="Permalink to this definition">¶</a></dt>
+<dd><p>array containing last activations</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingRecLayer.N">
+<span class="sig-name descname"><span class="pre">N</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingRecLayer.N" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of neurons in the layer</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingRecLayer.v">
+<span class="sig-name descname"><span class="pre">v</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingRecLayer.v" title="Permalink to this definition">¶</a></dt>
+<dd><p>array with membrane potential</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingRecLayer.s">
+<span class="sig-name descname"><span class="pre">s</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingRecLayer.s" title="Permalink to this definition">¶</a></dt>
+<dd><p>array with neuron activations</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingRecLayer.tau">
+<span class="sig-name descname"><span class="pre">tau</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingRecLayer.tau" title="Permalink to this definition">¶</a></dt>
+<dd><p>decay time, in timestep units</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.neurons.SpikingRecLayer.Wrec">
+<span class="sig-name descname"><span class="pre">Wrec</span></span><a class="headerlink" href="#spikelearn.neurons.SpikingRecLayer.Wrec" title="Permalink to this definition">¶</a></dt>
+<dd><p>recurrent synaptic weights</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="spikelearn.neurons.hard">
+<span class="sig-prename descclassname"><span class="pre">spikelearn.neurons.</span></span><span class="sig-name descname"><span class="pre">hard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.neurons.hard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements a Heaviside or step function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> – a numpy array object</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1 if x&gt;0, 0 otherwise</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>An array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-spikelearn.synapses">
+<span id="synapses"></span><h2>Synapses<a class="headerlink" href="#module-spikelearn.synapses" title="Permalink to this heading">¶</a></h2>
+<p>Implement static and plastic synapses</p>
+<p>A synapse object should implement three methods:</p>
+<ul class="simple">
+<li><p>A <cite>__call__</cite> method taking an arbitrary number of inputs and returning
+the synapse output</p></li>
+<li><p>An <cite>update(xo)</cite> method that passes the output of the neurons</p></li>
+<li><p>A <cite>reset()</cite> method</p></li>
+</ul>
+<p>Update and reset can be dummies, but a SpikingNet expects that
+they will be implemented.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.synapses.BaseSynapse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.synapses.</span></span><span class="sig-name descname"><span class="pre">BaseSynapse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">No</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.synapses.BaseSynapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Static synapse, where synaptic weights are stored in a 2D array.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.synapses.MSESynapse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.synapses.</span></span><span class="sig-name descname"><span class="pre">MSESynapse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">No</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tro</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_mod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracelim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.synapses.MSESynapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple plastic synapse implementing non-hebbian MSE rule</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.synapses.ModSTDPSynapse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.synapses.</span></span><span class="sig-name descname"><span class="pre">ModSTDPSynapse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">No</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tro</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_mod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracelim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.synapses.ModSTDPSynapse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.synapses.OneToOneSynapse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.synapses.</span></span><span class="sig-name descname"><span class="pre">OneToOneSynapse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.synapses.OneToOneSynapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>One to one static synapse</p>
+<p>Implement one to one static synapse chaining each input to its corresponding
+output.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.synapses.PlasticSynapse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.synapses.</span></span><span class="sig-name descname"><span class="pre">PlasticSynapse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">No</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tro</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracelim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.synapses.PlasticSynapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple plastic synapse implementing STDP</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.synapses.STDPSynapse">
+<span class="sig-prename descclassname"><span class="pre">spikelearn.synapses.</span></span><span class="sig-name descname"><span class="pre">STDPSynapse</span></span><a class="headerlink" href="#spikelearn.synapses.STDPSynapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#spikelearn.synapses.PlasticSynapse" title="spikelearn.synapses.PlasticSynapse"><code class="xref py py-class docutils literal notranslate"><span class="pre">PlasticSynapse</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="spikelearn.synapses.StaticSynapse">
+<span class="sig-prename descclassname"><span class="pre">spikelearn.synapses.</span></span><span class="sig-name descname"><span class="pre">StaticSynapse</span></span><a class="headerlink" href="#spikelearn.synapses.StaticSynapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <a class="reference internal" href="#spikelearn.synapses.BaseSynapse" title="spikelearn.synapses.BaseSynapse"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSynapse</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="spikelearn.synapses.TernarySynapse">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">spikelearn.synapses.</span></span><span class="sig-name descname"><span class="pre">TernarySynapse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ne</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">No</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">W0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tro</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_mod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rule_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Wlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">syn_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tracelim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#spikelearn.synapses.TernarySynapse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple plastic synapse implementing modulated STDP</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">SNN</a><ul>
+<li><a class="reference internal" href="#module-spikelearn.snn">Spiking neural networks</a><ul>
+<li><a class="reference internal" href="#spikelearn.snn.SpikingNet"><code class="docutils literal notranslate"><span class="pre">SpikingNet</span></code></a><ul>
+<li><a class="reference internal" href="#spikelearn.snn.SpikingNet.add_layer"><code class="docutils literal notranslate"><span class="pre">SpikingNet.add_layer()</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.snn.SpikingNet.add_synapse"><code class="docutils literal notranslate"><span class="pre">SpikingNet.add_synapse()</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.snn.SpikingNet.reset"><code class="docutils literal notranslate"><span class="pre">SpikingNet.reset()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-spikelearn.neurons">Neurons</a><ul>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingLayer"><code class="docutils literal notranslate"><span class="pre">SpikingLayer</span></code></a><ul>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingLayer.out"><code class="docutils literal notranslate"><span class="pre">SpikingLayer.out</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingLayer.N"><code class="docutils literal notranslate"><span class="pre">SpikingLayer.N</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingLayer.v"><code class="docutils literal notranslate"><span class="pre">SpikingLayer.v</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingLayer.s"><code class="docutils literal notranslate"><span class="pre">SpikingLayer.s</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingLayer.tau"><code class="docutils literal notranslate"><span class="pre">SpikingLayer.tau</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingLayer.reset"><code class="docutils literal notranslate"><span class="pre">SpikingLayer.reset()</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingLayer.step"><code class="docutils literal notranslate"><span class="pre">SpikingLayer.step()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingRecLayer"><code class="docutils literal notranslate"><span class="pre">SpikingRecLayer</span></code></a><ul>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingRecLayer.out"><code class="docutils literal notranslate"><span class="pre">SpikingRecLayer.out</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingRecLayer.N"><code class="docutils literal notranslate"><span class="pre">SpikingRecLayer.N</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingRecLayer.v"><code class="docutils literal notranslate"><span class="pre">SpikingRecLayer.v</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingRecLayer.s"><code class="docutils literal notranslate"><span class="pre">SpikingRecLayer.s</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingRecLayer.tau"><code class="docutils literal notranslate"><span class="pre">SpikingRecLayer.tau</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.neurons.SpikingRecLayer.Wrec"><code class="docutils literal notranslate"><span class="pre">SpikingRecLayer.Wrec</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#spikelearn.neurons.hard"><code class="docutils literal notranslate"><span class="pre">hard()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-spikelearn.synapses">Synapses</a><ul>
+<li><a class="reference internal" href="#spikelearn.synapses.BaseSynapse"><code class="docutils literal notranslate"><span class="pre">BaseSynapse</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.synapses.MSESynapse"><code class="docutils literal notranslate"><span class="pre">MSESynapse</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.synapses.ModSTDPSynapse"><code class="docutils literal notranslate"><span class="pre">ModSTDPSynapse</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.synapses.OneToOneSynapse"><code class="docutils literal notranslate"><span class="pre">OneToOneSynapse</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.synapses.PlasticSynapse"><code class="docutils literal notranslate"><span class="pre">PlasticSynapse</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.synapses.STDPSynapse"><code class="docutils literal notranslate"><span class="pre">STDPSynapse</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.synapses.StaticSynapse"><code class="docutils literal notranslate"><span class="pre">StaticSynapse</span></code></a></li>
+<li><a class="reference internal" href="#spikelearn.synapses.TernarySynapse"><code class="docutils literal notranslate"><span class="pre">TernarySynapse</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../index.html"
+                          title="previous chapter">Spikelearn documentation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/apidocs/snn.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../index.html" title="Spikelearn documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Spikelearn 0.1.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SNN</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Argonne.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+    </div>
+  </body>
+</html>
