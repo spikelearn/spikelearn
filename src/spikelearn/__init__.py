@@ -2,4 +2,5 @@
 
 from .neurons import SpikingLayer, SpikingRecLayer
 from .synapses import *
+from .ternary import *
 from .snn import SpikingNet

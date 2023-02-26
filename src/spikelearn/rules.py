@@ -134,3 +134,22 @@ class ModulatedLearningRule:
     def apply_rule(self, xe, xo, xm):
         raise NotImplemented
 
+
+class ModSTDPRule(ModulatedLearningRule):
+
+    def apply_rule(self, xe, xo, xm):
+        
+        dW = self.rule_params["Ap"]*np.outer(xo,self.te())
+        dW -= self.rule_params["An"]*np.outer(self.to(), xe)
+        return self.tm()*dW
+
+
+class MSERule(ModulatedLearningRule):
+    """Simple plastic synapse implementing non-hebbian MSE rule
+
+    """
+
+    def apply_rule(self, xe, xo, xm):        
+        dW = self.rule_params["lr"]*np.outer(xm-self.to(),self.te())
+        return dW
+
