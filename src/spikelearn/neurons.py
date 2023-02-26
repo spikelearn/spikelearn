@@ -1,7 +1,7 @@
 #Copyright Argonne 2022. See LICENSE.md for details.
 
 """
-Neurons in Spikingnet are grouped in layers.
+Neurons in SpikingNet are grouped in layers.
 
 All neurons share the same underlying interface, with Spikingnet
 expecting neurons to be callable and have `reset` and `update` methods
@@ -25,36 +25,25 @@ def hard(x):
     """
     return np.where(x>=0, 1.0, 0.0).astype(x.dtype)
 
-class SpikingLayer(Layer):
+class LIFLayer(Layer):
     """Implements a leaky integrate and fire
     
     Implements a layer of LIF neurons. Its interface conforms
     to that of a `Layer` object. 
 
-    Attributes:
+    Args:
 
-        out: array containing last activations
-
-        N: number of neurons in the layer
-
-        v: array with membrane potential
-
-        s: array with neuron activations
-
-        tau: decay time, in timestep units
+        N : Neurons in the layer
+        tau : decay time, in timestep units
+        v0  : threshold value (optional, default 1)
+        refr : boolean, neuron has 1 timestep refractory period
 
     """
 
     def __init__(self, N, tau, v0=1, refr=True):
-        """Instantiates a layer of LIF neurons
-
-        Args:
-
-            N : number of neurons in the layer
-            tau : decay time, in timestep units
-            v0 (optional, default 1) : threshold value
-
+        """Instantiates a layer of LIF neuron
         """
+
         self._N = N
         self._tau = tau
         self._a = np.exp(-1./tau)
@@ -70,18 +59,22 @@ class SpikingLayer(Layer):
 
     @property
     def N(self):
+        """Neurons in the layer"""
         return self._N
 
     @property
     def tau(self):
+        """Leakage time in timesteps"""
         return self._tau
 
     @property
     def s(self):
+        """Output spikes"""
         return self._s
     
     @property
     def v(self):
+        """Membrane potential"""
         return self._v
 
     def __call__(self, *x):
@@ -104,7 +97,15 @@ class SpikingLayer(Layer):
         return self._s
 
     def step(self, *x):
-        """Advances the neuron a single timestep"""
+        """Advances the neuron a single timestep
+   
+        Args:
+            x: a tuple of independent inputs
+
+        Returns:
+            An array of spikes, 1 if a neuron spikes 0 otherwise
+        """
+ 
         return self(x)
 
     def reset(self):
@@ -115,10 +116,13 @@ class SpikingLayer(Layer):
 
     @property
     def out(self):
+        """Output spikes"""
         return self.s
 
 
-class SpikingRecLayer(SpikingLayer):
+SpikingLayer = LIFLayer
+
+class SpikingRecLayer(LIFLayer):
     """Implements spiking neurons with an internal recurrent interaction.
 
     Implements a layer of leaky integrate and fire (LIF) neurons with
@@ -173,7 +177,7 @@ class SpikingRecLayer(SpikingLayer):
 
 
 
-class BioSpikingLayer(Layer):
+class BioLIFLayer(Layer):
 
     def __init__(self, N, nudt, v0=0.5):
         self.N = N
@@ -197,7 +201,7 @@ class BioSpikingLayer(Layer):
         a = np.exp(-self.nu0*self.nu)
         self.de = xe/self.nu
         self.v = self.vold * a + self.de*(1-a)
-        self.s = H(self.v-self.v0)
+        self.s = hard(self.v-self.v0)
         if perf:
             self.xe = xe
             self.calc_perf()
@@ -212,4 +216,4 @@ class BioSpikingLayer(Layer):
         dv = self.v - self.vold
         av = 0.5*(self.v + self.vold)
         self.power = self.xe*((1-self.de)**2 + dv/self.nu0*(2-self.de-av))
- 
+
