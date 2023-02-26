@@ -1,6 +1,6 @@
 #Copyright Argonne 2022. See LICENSE.md for details.
 """
-Implement static and plastic synapses
+Implement static and plastic binary synapses
 
 A synapse object should implement three methods:
 
@@ -9,73 +9,116 @@ A synapse object should implement three methods:
 - An `update(xo)` method that passes the output of the neurons
 - A `reset()` method
 
-Update and reset can be dummies, but a SpikingNet expects that
+Update and reset can be dummies, but a SpikingNet object expects that
 they will be implemented.
 
 """
 
 import numpy as np
-from .transforms import LowPass, PassThrough
-from .trace import Trace
+from .rules import STDPRule
 
 
 class BaseSynapse:
     """
-    Static synapse, where synaptic weights are stored in a 2D array.
-    """
+    Base class for a synapse.
 
-    def __init__(self, Ne, No, W0, transform=None, syn_type=None):
-        """
-        
-        Args:
+    Args:
 
-        Ne : number of presynaptic neurons
-        No : number of postsynaptic neurons
-        W0 : a 2D array with the initial synaptic weights
+        Ne : dimensions of presynaptic neurons
+        No : dimensions of postsynaptic neurons
         transform : input transform
         syn_type : type of synapse, one of exc, inh, hybrid, None
-        """
+
+   
+    """
+
+    def __init__(self, Ne, No, W0, transform=None, learning_rule=None, syn_type=None):
 
         self.Ne = Ne
         self.No = No
-        self._W = W0
+        self.W = W0
         self.out = np.zeros(self.No)
-        
+
+        if syn_type is None:
+            self.syn_type = 'hybrid'
+        else:
+            self.syn_type = syn_type
+
         self.has_transform = transform is not None
         if self.has_transform:
             self.transform = transform
         else:
             self.transform = lambda x: x
         
-        if syn_type is None:
-            self.syn_type = 'hybrid'
+        
+        self._set_learning_rule(learning_rule)
+
+
+    def _set_learning_rule(self, learning_rule):
+
+        self.learning_rule = learning_rule
+        if self.learning_rule is None:
+            self._plastic = False
         else:
-            self.syn_type = syn_type
+            self._plastic = True
+            self.learning_rule.init(self.Ne, self.No)
+
 
     def __call__(self, xe):
+        self.xe = xe
+        return self.calc(xe)
+
+
+    def calc(self, xe):
         if self.syn_type == "inh":
             self.out = - self.W @ self.transform(xe)
         else:
             self.out =  self.W @ self.transform(xe)
         return self.out
 
+
     def reset(self):
         if self.has_transform:
             self.transform.reset()
+        if self._plastic:
+            self.learning_rule.reset()
+
+
+    def update(self, xo, learn=True):
+        if self._plastic:
+            if learn:
+                self.W = self.learning_rule.update(self.xe, xo, self.W, learn)
+            else:
+                self.learning_rule.update(self.xe, xo)
 
     @property
     def W(self):
+        """Returns the synaptic weights"""
         return self._W
     
     @W.setter
     def W(self, W):
         self._W = W
 
-    def update(self, pos, learn=True):
-        pass
 
+class StaticSynapse(BaseSynapse):
+    """
+    Base class for a synapse where synaptic weights are stored in a 2D array.
+       
+    Args:
 
-StaticSynapse = BaseSynapse
+        Ne : number of presynaptic neurons
+        No : number of postsynaptic neurons
+        W0 : a 2D array with the initial synaptic weights
+        transform : input transform
+        syn_type : type of synapse, one of exc, inh, hybrid, None
+
+    """
+
+    def __init__(self, Ne, No, W0, transform=None, syn_type=None):
+
+        super().__init__(Ne, No, W0, transform, None, syn_type)
+
 
 
 class OneToOneSynapse(BaseSynapse):
@@ -85,191 +128,42 @@ class OneToOneSynapse(BaseSynapse):
     Implement one to one static synapse chaining each input to its corresponding
     output.
 
+    Args:
+
+        Ne : Dimensions of neurons in the layer
+        W0 : Synaptic weights
+        transform : input transform
+        syn_type : type of synapse, one of exc, inh, hybrid, None
+
     """
 
-    def __init__(self, Ne, W0, transform=None, syn_type=None):
-        super().__init__(Ne, Ne, W0, transform, syn_type)
+    def __init__(self, Ne, W0, transform=None, learning_rule=None,
+                 syn_type=None):
 
-    def __call__(self, xe):
+        super().__init__(Ne, Ne, W0, transform, learning_rule, syn_type)
+
+
+    def calc(self, xe):
+        self.xe = xe
         if self.syn_type == "inh":
             return - self.W * self.transform(xe)
         else:
             return self.W * self.transform(xe)
 
 
-class PlasticSynapse(BaseSynapse):
-    """Simple plastic synapse implementing STDP
-
-    """
+class STDPSynapse(BaseSynapse):
 
     def __init__(self, Ne, No, W0, tre, tro, transform=None,
         rule_params = None, Wlim=1, syn_type=None, tracelim=10):
-        """
-        Args:
 
-        Ne : number of presynaptic neurons
-        No : number of postsynaptic neurons
-        W0 : a 2D array with the initial synaptic weights
-        tre : presynaptic trace tuple
-        tro : postsynaptic trace tuple
-        transform : transform function applied to inputs, defaults None
-        rule_params: dictionary with parameters defining synaptic
-            plasticity rule. Requires `Ap` and `An` keys.
-        Wlim : clamping parameter for synaptic weights
-        syn_type : type of synapse ("exc", "inh", None)
-        tracelim : clamping parameter for synaptic traces
-        
-        """
-
-        super().__init__(Ne, No, W0, syn_type=syn_type, transform=transform)
-
-        self.tre = tre
-        self.tro = tro
-        self.Wlim = Wlim
-        self.tracelim = tracelim
-        self.rule_params = rule_params
-
-        self.te = Trace(self.Ne, self.tre[0], self.tre[1], self.tracelim)
-        self.to = Trace(self.No, self.tro[0], self.tro[1], self.tracelim)
+        self.learning_rule = STDPRule(rule_params, tre, tro, tracelim, Wlim)
+        super().__init__(Ne, No, W0, transform, self.learning_rule, syn_type)
 
 
-    def reset(self):
-
-        super().reset()
-        self.te.reset()
-        self.to.reset()
-
-    def __call__(self, xe):
-
-        self.xe = self.transform(xe)
-        if self.syn_type == "inh":
-            return - self.W @ self.xe
-        else:
-            return self.W @ self.xe
-
-
-    def update(self, xo, learn=True):
-
-        self.te.update(self.xe)
-        self.to.update(xo)
-
-        if learn:
-
-            dW = self.apply_rule(self.xe, xo)
-            self.W += dW
-            self.W[self.W > self.Wlim] = self.Wlim
-            if self.syn_type is None:
-                self.W[self.W < -self.Wlim] = -self.Wlim
-            else:
-                self.W[self.W < 0] = 0
-
-    def apply_rule(self, xe, xo):
+    def old_apply_rule(self, xe, xo):
         
         dW = self.rule_params["Ap"]*np.outer(xo,self.te())
         dW -= self.rule_params["An"]*np.outer(self.to(), xe)
-        return dW
-
-
-class TernarySynapse(PlasticSynapse):
-    """Simple plastic synapse implementing modulated STDP
-
-    """
-
-    def __init__(self, Ne, No, W0, tre, tro, trm, transform=None,
-        transform_mod=None,
-        rule_params = None, Wlim=1, syn_type=None, tracelim=10):
-        """
-        Args:
-            Ne : number of presynaptic neurons
-            No : number of postsynaptic neurons
-            W0 : a 2D array with the initial synaptic weights
-            tre : presynaptic trace tuple
-            tro : postsynaptic trace tuple
-            trm : modulatory trace tuple
-            transform : transform function applied to inputs
-            transform_mod : transform function applied to modulatory input
-            rule_params: parameters defining synaptic plasticity rule
-            Wlim : clamping parameter for synaptic weights
-            syn_type : type of synapse ("exc", "inh", None)
-            tracelim : clamping parameter for synaptic traces
-        
-        """
-
-        super().__init__(Ne, No, W0, tre, tro, transform=transform,
-            rule_params=rule_params, syn_type=syn_type, tracelim=tracelim)
-
-        self.trm = trm
-        self.Wlim = Wlim
-        self.tm = Trace(self.No, self.trm[0], self.trm[1], self.tracelim)
-
-        self.has_transform_mod = transform_mod is not None
-
-        if self.has_transform_mod:
-            self.transform_mod = transform_mod
-        else:
-            self.transform_mod = lambda x : x
-
-
-    def reset(self):
-
-        super().reset()
-        self.tm.reset()
-        if self.has_transform_mod:
-            self.transform_mod.reset()
-
-
-    def __call__(self, xe, xm):
-
-        self.xe = self.transform(xe)
-        self.xm = self.transform_mod(xm)
-        if self.syn_type == "inh":
-            return - self.W @ self.xe
-        else:
-            return self.W @ self.xe
-
-
-    def update(self, xo, learn=True):
-
-        self.te.update(self.xe)
-        self.to.update(xo)
-        self.tm.update(self.xm)
-
-        if learn:
-
-            dW = self.apply_rule(self.xe, xo)
-            self.W += dW
-            self.W[self.W > self.Wlim] = self.Wlim
-            if self.syn_type is None:
-                self.W[self.W < -self.Wlim] = -self.Wlim
-            else:
-                self.W[self.W < 0] = 0
-
-    def apply_rule(self, xe, xo, xm=None):
-        
-        dW = self.rule_params["Ap"]*np.outer(xo,self.te())
-        dW -= self.rule_params["An"]*np.outer(self.to(), xe)
-        return self.tm()*dW
-
-
-STDPSynapse = PlasticSynapse
-
-
-class ModSTDPSynapse(TernarySynapse):
-
-    def apply_rule(self, xe, xo, xm=None):
-        
-        dW = self.rule_params["Ap"]*np.outer(xo,self.te())
-        dW -= self.rule_params["An"]*np.outer(self.to(), xe)
-        return self.tm()*dW
-
-
-class MSESynapse(TernarySynapse):
-    """Simple plastic synapse implementing non-hebbian MSE rule
-
-    """
-
-    def apply_rule(self, xe, xo):        
-        dW = self.rule_params["lr"]*np.outer(self.xm-self.to(),self.te())
         return dW
 
 
