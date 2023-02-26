@@ -130,24 +130,17 @@ class SpikingRecLayer(LIFLayer):
     layer can be used to implement cross-inhibition between neurons
     within the layer. Its interface conforms to that of a `Layer` object. 
 
-    Attributes:
+    Args:
 
-        out: array containing last activations
-
-        N: number of neurons in the layer
-
-        v: array with membrane potential
-
-        s: array with neuron activations
-
-        tau: decay time, in timestep units
-
-        Wrec: recurrent synaptic weights
+        N : number of neurons in the layer
+        tau : decay time, in timestep units
+        Wrec: a 2D array with synaptic weights
+        v0 (optional, default 1) : threshold value
 
     """
 
     def __init__(self, N, tau, Wrec, v0=1):
-        """Instantiates a layer of LIF neurons
+        """Instantiates a layer of LIF neurons with recurrent weights
 
         Args:
 
