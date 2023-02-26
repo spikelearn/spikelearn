@@ -12,6 +12,9 @@ and neuromorphic computing applications.
 .. include:: intro.rst
 
 
+Table of contents
+-----------------
+
 .. toctree::
    :maxdepth: 2
 
