@@ -27,7 +27,8 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
-    'sphinx.ext.autosummary',   
+    'sphinx.ext.autosummary',
+    'nbsphinx',   
 ]
 
 autosummary_generate = True
