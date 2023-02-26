@@ -27,13 +27,13 @@ Spikelearn is still in development.
 Quick install
 -------------
 
-The easiest way is directly through :code:`pypi`:
+The easiest way is directly through ``pypi``:
 
 .. code::
 
     pip install spikelearn
 
-Alternatively, you can directly obtain `spikelearn` through its 
+Alternatively, you can directly obtain ``spikelearn`` through its 
 `github repository <https://github.com/spikelearn/spikelearn>`_.
 
 
@@ -63,7 +63,7 @@ Usage
 Citing
 ------
 
-If you want to acknowledge `spikelearn` in a publication, you can cite
+If you want to acknowledge ``spikelearn`` in a publication, you can cite
 the following work:
 
 Angel Yanguas-Gil and Sandeep Madireddy, *AutoML for neuromorphic computing

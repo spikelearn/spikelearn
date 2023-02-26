@@ -77,7 +77,7 @@ class SpikingNet(StreamNet):
     """
     A class implementing arbitrary neural networks
     
-    Imstances start with empty networks, which can be subsequently
+    Instances start with empty networks, which can be subsequently
     populated with layers, inputs, and synapses
 
     - Layers are objects taking a one or more inputs and returning an
@@ -149,23 +149,29 @@ class SpikingNet(StreamNet):
 
 
     def reset(self):
-        """Resets all elements of the network
-        
-        Broadcasts a reset signal to all nodes and synapses
+        """Broadcasts a reset signal to all layers and synapses
         in the network
         """
         self.broadcast("reset")
 
     def update(self, learn):
+        """Broadcasts a learn signal to all layers and synapses"""
         self.broadcast("update", learn)
 
     def __call__(self, *args, learn=True):
         """Advances the network a single timestep.
 
+        Args:
+            args: a tuple of inputs. Must match the number of inputs in the
+                SpikingNet object
+            learn: if True, broadcasts a learn signal at the end of the
+                timestep
+
         Returns:
             A list with the declared network outputs
 
         """
+        
         self.learn = learn
         super().__call__(*args)
         self.update(learn)

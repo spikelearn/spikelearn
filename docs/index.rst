@@ -14,12 +14,10 @@ and neuromorphic computing applications.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Index
 
-   apidocs/snn
+   started
+   apidocs/documentation
 
-.. automodule:: spikelearn
-   :members:
 
 Indices and tables
 ------------------

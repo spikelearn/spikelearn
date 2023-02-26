@@ -70,12 +70,28 @@ class StreamNet:
 
     
     def add_input(self, name):
+        """Adds an external input
+        
+        Args:
+            name: the name of the input
+
+        Raises:
+            ValueError: User tries to reuse an existing name
+        """
+
         if name in self._iports:
             raise ValueError("Input {} already defined".format(name))
         self._iports.append(name)
         self._iports_dict[name] = len(self._iports)-1
 
     def add_output(self, name, n=1):
+        """Defines an output
+        
+        Args:
+            name: name of the layer
+            n: index of the element output to be returned (optional, default 1)
+             
+        """
         if name in self._elements.keys():
             if self._el_out[name] > n:
                 raise ValueError("Element {} has fewer than {} outputs".format(name, n))
