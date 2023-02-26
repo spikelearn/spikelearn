@@ -48,6 +48,7 @@ class StreamNet:
         self._el_out = {}
         self.return_values = return_values
 
+
     def add_element(self, name, el, n_in=0, n_out=1):
         """Adds an element to the streamnet
 
@@ -68,7 +69,12 @@ class StreamNet:
         self._el_in[name] = [None for i in range(n_in)]
         self._el_out[name] = n_out
 
-    
+    def get_element_names(self):
+        return self._elements.keys()[:]
+
+    def get_input_names(self):
+        return self._iports[:]
+
     def add_input(self, name):
         """Adds an external input
         
@@ -103,21 +109,37 @@ class StreamNet:
             raise ValueError("Element or Input {} not found".format(name))
 
     def set_el_inputs(self, name, *args):
+        if name not in self._elements.keys():
+            raise ValueError("Element or Input {} not found".format(name))
         arg_list = []
         for arg in args:
             if isinstance(arg, str):
+                if not self.name_exists(arg):
+                    raise ValueError("Element or Input {} not found".format(arg))
                 arg_list.append((arg,))
             else:
+                if arg[0] not in self._elements.keys():
+                    raise ValueError("Element {} not found".format(arg[0]))
                 arg_list.append(arg)
         self._el_in[name] = arg_list
 
     def set_el_input(self, el_name, n_in, name, n_out=None):
+        if name not in self._elements.keys():
+            raise ValueError("Element or Input {} not found".format(name))
+
         if n_out is None:
             self._el_in[el_name][n_in] = (name,)
         else:
             self._el_in[el_name][n_in] = (name, n_out)
 
+    def name_exists(self, name):
+        return (name in self._elements.keys()) or (name in self._iports)
+    
     def add_el_input(self, el_name, name, n_out=None):
+    
+        if not self.name_exists(name):
+            raise ValueError("Element or Input {} not found".format(name))
+
         if n_out is None:
             self._el_in[el_name].append((name,))
         else:
