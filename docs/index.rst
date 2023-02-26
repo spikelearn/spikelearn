@@ -6,26 +6,23 @@
 Spikelearn documentation
 ========================
 
-.. automodule:: spikelearn
-   :members:
+Spikelearn is a package that implements spiking neural networks for ML workflows
+and neuromorphic computing applications.
+
+.. include:: intro.rst
 
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Index
 
-   apidocs/snn.rst
+   apidocs/snn
 
-
-About Spikelearn
-----------------
-
-Spikelearn is a package that implements spiking neural networks for ML workflows
-and neuromorphic computing applications.
-
+.. automodule:: spikelearn
+   :members:
 
 Indices and tables
-==================
+------------------
 
 * :ref:`genindex`
 * :ref:`modindex`
