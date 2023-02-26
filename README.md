@@ -25,7 +25,17 @@ Spikelearn intends to fill that role.
 
 ## Status
 
-Spikelearn is still in development.
+Spikelearn is still in development. Please check spikelearn's
+documentation in [readthedocs](https://anl-spikelearn.readthedocs.io/en/latest/index.html).
+
+
+## Quick install
+
+Through pypi:
+
+```
+pip install spikelearn
+```
 
 ## Usage
 

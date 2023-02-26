@@ -60,6 +60,17 @@ Usage
         print(s)
 
 
+Citing
+------
+
+If you want to acknowledge `spikelearn` in a publication, you can cite
+the following work:
+
+Angel Yanguas-Gil and Sandeep Madireddy, *AutoML for neuromorphic computing
+and application-driven co-design: asynchronous, massively parallel
+optimization of spiking architectures*, International Conference
+on Rebooting Computing, San Francisco, CA (2022).
+
 Acknowledgements
 ----------------
 
