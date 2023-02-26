@@ -7,6 +7,7 @@ import sys
 import os
 
 sys.path.insert(0, os.path.abspath(".."))
+sys.path.insert(0, os.path.abspath("../src"))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -38,7 +39,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 pygments_style = 'sphinx'
 master_doc = 'index'
 
-language = None
+language = 'en'
 
 exclude_patterns = ['_build', '_templates', 'Thumbs.db', '.DS_Store']
 
