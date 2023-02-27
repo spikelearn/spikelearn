@@ -10,25 +10,6 @@ An element has the following interface:
 
 """
 
-class Element:
-
-    def __init__(self, el_object, default, n_out=1):
-
-        self.object = el_object
-        self.out = default
-        self.n_out = n_out
-
-    def run_method(self, name, *args):
-        m = getattr(self.object, name)
-        m(*args)
-        
-    def __call__(self, *args):
-        if self.n_out == 1:
-            self.out = [self.object(*args)]
-        else:
-            self.out = self.object(*args)
-
-
 class StreamNet:
 
     """
@@ -186,7 +167,7 @@ class StreamNet:
                 if self._el_out[name] == 1:
                     self.out.append(self._elements[name].out)
                 else:
-                    self.out.append(self._element[name.out[nout-1]])
+                    self.out.append(self._element[name].out[nout-1])
         
 #        if len(self._oports) == 1:
 #            self.out = self.out[0]
