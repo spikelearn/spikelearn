@@ -28,6 +28,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
     'sphinx.ext.autosummary',
+    'sphinxcontrib.googleanalytics',
     'nbsphinx',   
 ]
 
@@ -44,7 +45,7 @@ language = 'en'
 
 exclude_patterns = ['_build', '_templates', 'Thumbs.db', '.DS_Store']
 
-
+googleanalytics_id="G-0EJTSTH6PY"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -57,4 +58,4 @@ html_theme = 'nature'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-html_baseurl = "https://spikelearn.github.io/spikelearn/"
+html_baseurl = "https://anl-spikelearn.readthedocs.io/en/latest"
