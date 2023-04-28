@@ -16,12 +16,14 @@ they will be implemented.
 
 from .trace import Trace
 import numpy as np
+from collections import namedtuple
 
+WeightConstr = namedtuple('WeightConstr', ["Wmax", "Wmin"], [1.0, None])
 
 class LearningRule:
     """Base class implementing a learning rule"""
 
-    def __init__(self, rule_params, tre=None, tro=None, tracelim=10, Wlim=1):
+    def __init__(self, rule_params, tre=None, tro=None, tracelim=10, w_const=None):
         self.rule_params = rule_params
         self.tre = tre
         self.tro = tro
@@ -31,7 +33,16 @@ class LearningRule:
             self.has_traces = True
 
         self.tracelim = tracelim
-        self.Wlim = Wlim
+        self.w_const = WeightConstr() if w_const is None else w_const
+        self.Wmax = self.w_const.Wmax
+        if self.w_const.Wmin is None:
+            if self.syn_type is None:
+                self.Wmin = - self.Wmax
+            else:
+                self.Wmin = 0
+        else:
+            self.Wmin = self.w_const.Wmin
+
 
     def init(self, Ne, No, syn_type=None):
         if self.has_traces:
@@ -41,6 +52,7 @@ class LearningRule:
             self.te = None
             self.to = None
         self.syn_type = syn_type
+
 
     def update(self, xe, xo, W=None, learn=True):
 
@@ -52,11 +64,8 @@ class LearningRule:
 
             dW = self.apply_rule(xe, xo)
             W += dW
-            W[W > self.Wlim] = self.Wlim
-            if self.syn_type is None:
-                W[W < -self.Wlim] = -self.Wlim
-            else:
-                W[W < 0] = 0
+            W[W > self.Wmax] = self.Wmax
+            W[W < self.Wmin] = self.Wmin
         return W
 
 
